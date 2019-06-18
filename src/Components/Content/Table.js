@@ -11,9 +11,14 @@ class Table extends Component {
     unitPrice: 0,
     extendedPrice: 0,
     newItem: {},
-    items: [],
+    items: this.props.table,
     total: 0
   };
+
+  componentWillReceiveProps(nextProp) {
+    //set the items in state to props value recieved
+    const { table } = nextProp;
+  }
 
   render() {
     return (
@@ -52,6 +57,7 @@ class Table extends Component {
     );
   }
 
+  //handles submit event for the add to table btn
   onSubmit = (value, event) => {
     event.preventDefault();
 
@@ -62,41 +68,42 @@ class Table extends Component {
         partNumber: this.state.partNumber,
         description: this.state.description,
         quantity: this.state.quantity,
-        unitPrice: this.state.unitPrice,
-        extendedPrice: this.state.quantity * this.state.unitPrice
+        unitPrice: this.state.unitPrice
+        //extendedPrice: this.state.quantity * this.state.unitPrice
       })
     );
     console.log(this.state.newItem);
     this.addItem(value);
   };
 
+  //Adds a new item to the table
   addItem = contextState => {
     let tempItems = [...this.state.items];
     tempItems.push({ ...this.state.newItem });
-    console.log("newctc addcontact", this.state.newItem);
-    console.log("newctclist", tempItems);
 
     this.setState(
       { items: tempItems, total: this.calculateTotal(tempItems) },
+
+      //callback function after state changes, send table data to context
       () => {
-        console.log(this.state.items);
+        const itemsAndTotal = Object.assign(
+          {},
+          {
+            items: this.state.items,
+            total: this.calculateTotal(tempItems)
+          }
+        );
+
+        //send
+        contextState.dispatch({
+          type: "TABLE_DATA",
+          payload: itemsAndTotal
+        });
       }
     );
-
-    const itemsAndTotal = Object.assign(
-      {},
-      {
-        items: this.state.items,
-        total: this.calculateTotal(tempItems)
-      }
-    );
-
-    contextState.dispatch({
-      type: "TABLE_DATA",
-      payload: itemsAndTotal
-    });
   };
 
+  //calculates table items total
   calculateTotal = itemsIn => {
     var total = 0;
     console.table(itemsIn);
@@ -111,12 +118,14 @@ class Table extends Component {
     return total;
   };
 
+  //capture changes in input form
   onFormChange = event => {
     this.setState({
       [event.target.name]: event.target.value
     });
   };
 
+  //called in render function to render input form
   renderForm(contextState) {
     return (
       <form onSubmit={this.onSubmit.bind(this, contextState)}>
@@ -184,7 +193,7 @@ class Table extends Component {
       </form>
     );
   }
-
+  //called in render function to render table heading
   renderTableHead() {
     return (
       <thead>

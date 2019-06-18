@@ -10,19 +10,19 @@ class Info extends Component {
     //`${new Date().getFullYear()}-${new Date().getMonth()}-${new Date().getDate()}`
   };
 
-  onFormChange = (dispatch, event) => {
-    this.setState(
-      {
-        [event.target.name]: event.target.value
-      },
-      () => {
-        dispatch({
-          type: "INFO",
-          payload: this.state
-        });
-      }
-    );
-  };
+  componentWillReceiveProps(nextProps) {
+    //set the items in state to props value recieved
+    const { info } = nextProps;
+
+    if (Object.keys(info).length) {
+      this.setState({
+        company: info.company,
+        quoteNo: info.quoteNo,
+        date:
+          info.date !== undefined ? info.date.split("T")[0] : this.state.date
+      });
+    }
+  }
 
   render() {
     return (
@@ -38,6 +38,20 @@ class Info extends Component {
       </Consumer>
     );
   }
+
+  onFormChange = (dispatch, event) => {
+    this.setState(
+      {
+        [event.target.name]: event.target.value
+      },
+      () => {
+        dispatch({
+          type: "INFO",
+          payload: this.state
+        });
+      }
+    );
+  };
 
   renderForm(dispatch) {
     return (

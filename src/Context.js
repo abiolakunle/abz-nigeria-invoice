@@ -49,9 +49,23 @@ export class Provider extends Component {
   }
 
   sendInvoice = () => {
+    //console.table(this.state.table);
+    let invoice = Object.assign(
+      {},
+      {
+        ...this.state.info,
+        table: [...this.state.table]
+      }
+    );
+
+    console.log("New Invoice", invoice);
     axios
-      .post("https://localhost:44311/api/Quotation/", this.state.info)
-      .then()
+      .post("https://localhost:44310/api/Quotation", invoice)
+      .then
+      //res => {
+      //console.log(res.data);
+      //}
+      ()
       .catch(error => {
         console.log(error);
       });
